@@ -8,7 +8,7 @@ import datetime
 n_samples = 10
 out_path = '/home/sonia/ForestDiffusion/synth_data'
 data_path = '/home/sonia/tabby/data'
-datasets = ['house-new', 'rain', 'travel', 'adult', 'glaucoma']
+datasets = ['abalone', 'diabetes-new', 'house-new', 'rain', 'travel', 'adult', 'glaucoma']
 
 os.makedirs(out_path, exist_ok=True)
 now = datetime.datetime.now().strftime("%I.%M%p.%B.%d")
