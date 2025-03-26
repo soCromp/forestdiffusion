@@ -5,7 +5,7 @@ from ForestDiffusion import ForestDiffusionModel
 import json
 import datetime 
 
-n_samples = 1000
+n_samples = 10
 out_path = '/home/sonia/ForestDiffusion/synth_data'
 data_path = '/home/sonia/tabby/data'
 datasets = ['abalone', 'diabetes-new', 'house-new', 'rain', 'travel', 'adult', 'glaucoma']
@@ -14,7 +14,7 @@ os.makedirs(out_path, exist_ok=True)
 now = datetime.datetime.now().strftime("%I.%M%p.%B.%d")
 
 for dataset in datasets:
-    df_train = pd.read_csv(os.path.join(data_path, dataset, 'latest/train.csv'))
+    df_train = pd.read_csv(os.path.join(data_path, dataset, 'latest/val.csv'))
     np_train = df_train.to_numpy()
     with open(os.path.join(data_path, dataset, 'latest/config.json')) as f:
         config = json.load(f)
@@ -32,7 +32,10 @@ for dataset in datasets:
                                         bin_indexes=[], cat_indexes=cat_indexes, int_indexes=[], diffusion_type='flow', n_jobs=-1)
     synth = forest_model.generate(batch_size=n_samples)
 
-    synthdf = pd.DataFrame(synth, columns=forest_model.X_names_after)
+    if len(cat_indexes) > 0:
+        synthdf = pd.DataFrame(synth, columns=forest_model.X_names_after)
+    else:
+        synthdf = pd.DataFrame(synth, columns=df_train.columns)
     unassigned = {}
     predummies = list(set(forest_model.X_names_before) - set(forest_model.X_names_after))  
     postdummies = list(set(forest_model.X_names_after) - set(forest_model.X_names_before))  # what their names will be called
