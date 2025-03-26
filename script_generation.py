@@ -41,7 +41,7 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--out_path', type=str, default='jolicoea/tabular_generation_results.txt',
+parser.add_argument('--out_path', type=str, default='./tabular_generation_results.txt',
                     help='filename for the results')
 
 parser.add_argument("--restore_from_name", type=str2bool, default=False, help="if True, restore session based on name")
