@@ -8,13 +8,13 @@ import datetime
 n_samples = 10
 out_path = '/home/sonia/ForestDiffusion/synth_data'
 data_path = '/home/sonia/tabby/data'
-datasets = ['abalone', 'diabetes-new', 'house-new', 'rain', 'travel', 'adult', 'glaucoma']
+datasets = ['house-new', 'rain', 'travel', 'adult', 'glaucoma']
 
 os.makedirs(out_path, exist_ok=True)
 now = datetime.datetime.now().strftime("%I.%M%p.%B.%d")
 
 for dataset in datasets:
-    df_train = pd.read_csv(os.path.join(data_path, dataset, 'latest/val.csv'))
+    df_train = pd.read_csv(os.path.join(data_path, dataset, 'latest/train.csv'))
     np_train = df_train.to_numpy()
     with open(os.path.join(data_path, dataset, 'latest/config.json')) as f:
         config = json.load(f)
