@@ -34,23 +34,24 @@ for dataset in datasets:
 
     if len(cat_indexes) > 0:
         synthdf = pd.DataFrame(synth, columns=forest_model.X_names_after)
+        unassigned = {}
+        predummies = list(set(forest_model.X_names_before) - set(forest_model.X_names_after))  
+        postdummies = list(set(forest_model.X_names_after) - set(forest_model.X_names_before))  # what their names will be called
+        for feat in predummies:
+            corresponding = [col for col in postdummies if col.split('_')[0] == feat]
+            subdf = synthdf[corresponding] # just the cols for this feature, for all rows
+            choices = subdf.to_numpy().argmax(axis=1)
+            subdf.iloc[:,:] = 0
+            subdf.values[np.arange(len(subdf)), choices] = 1
+            synthdf[corresponding] = subdf
+
+        undummies = pd.from_dummies(synthdf[postdummies], sep='_')
+        synthdf = pd.concat([synthdf, undummies], axis=1)
+        synthdf = synthdf.drop(columns=postdummies)
+        synthdf = synthdf[forest_model.X_names_before]
+        synthdf.columns = df_train.columns
     else:
         synthdf = pd.DataFrame(synth, columns=df_train.columns)
-    unassigned = {}
-    predummies = list(set(forest_model.X_names_before) - set(forest_model.X_names_after))  
-    postdummies = list(set(forest_model.X_names_after) - set(forest_model.X_names_before))  # what their names will be called
-    for feat in predummies:
-        corresponding = [col for col in postdummies if col.split('_')[0] == feat]
-        subdf = synthdf[corresponding] # just the cols for this feature, for all rows
-        choices = subdf.to_numpy().argmax(axis=1)
-        subdf.iloc[:,:] = 0
-        subdf.values[np.arange(len(subdf)), choices] = 1
-        synthdf[corresponding] = subdf
-
-    undummies = pd.from_dummies(synthdf[postdummies], sep='_')
-    synthdf = pd.concat([synthdf, undummies], axis=1)
-    synthdf = synthdf.drop(columns=postdummies)
-    synthdf = synthdf[forest_model.X_names_before]
-    synthdf.columns = df_train.columns
+    
 
     synthdf.to_csv(os.path.join(out_path, f'{dataset}_{now}.csv'), index=False)
